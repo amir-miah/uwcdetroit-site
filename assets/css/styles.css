@@ -394,7 +394,11 @@ body.menu-open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rota
 /* =====================================================================
    Gallery  (before/after grid)
    ===================================================================== */
-.gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2vw, 24px); }
+/* Wrapping row so an incomplete last row stays centred (5 items = 3 + 2). */
+.gallery { --gal-gap: clamp(16px, 2vw, 24px); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--gal-gap); }
+.gallery > figure { flex: 0 1 calc((100% - 2 * var(--gal-gap)) / 3); margin: 0; }
+@media (max-width: 1024px) { .gallery > figure { flex-basis: calc((100% - var(--gal-gap)) / 2); } }
+@media (max-width: 720px) { .gallery > figure { flex-basis: 100%; } }
 .gallery .ba { aspect-ratio: 4 / 3; border-radius: var(--r-lg); box-shadow: var(--shadow-md); }
 .gallery__cap { margin-top: 10px; font-size: var(--fs-sm); color: var(--color-fg-soft); display: flex; align-items: center; gap: 8px; }
 .gallery__cap svg { width: 15px; height: 15px; color: var(--color-accent); }
@@ -600,10 +604,18 @@ body.menu-open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rota
 .legal { max-width: 760px; margin-inline: auto; }
 .legal h2 { font-size: var(--fs-2xl); margin-top: 40px; }
 .legal h2:first-child { margin-top: 0; }
-.legal p, .legal li { color: var(--color-fg-soft); font-size: var(--fs-lg); margin-top: 14px; line-height: 1.7; }
-.legal ul { margin-top: 12px; padding-left: 4px; display: grid; gap: 8px; }
-.legal li { display: flex; gap: 12px; margin-top: 0; }
-.legal li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent); flex: none; margin-top: 12px; }
+.legal p, .legal li { color: var(--color-fg-soft); font-size: var(--fs-lg); line-height: 1.7; }
+.legal p { margin-top: 14px; }
+/* Plain block list. Never flex/grid here: those would turn inline children
+   (<strong>, <a>, text runs) into separate items and break the line flow. */
+.legal ul, .legal ol { display: block; margin-top: 12px; padding-left: 0; list-style: none; }
+.legal li { display: block; position: relative; padding-left: 24px; margin-top: 10px; }
+.legal li::before {
+  content: ""; position: absolute; left: 4px; top: 0.72em;
+  width: 7px; height: 7px; border-radius: 50%; background: var(--color-accent);
+}
+.legal li > * { display: inline; }            /* keep <strong>/<a> inline */
+.legal strong { color: var(--color-fg); font-weight: 700; }
 .legal .updated { font-size: var(--fs-sm); color: var(--color-fg-mute); margin-top: 8px; }
 
 /* Nearby-suburb chips in the service-area section */
