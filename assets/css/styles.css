@@ -449,13 +449,18 @@ body.menu-open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rota
   color: #fff; padding: clamp(32px, 5vw, 64px);
 }
 .book__grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(32px, 5vw, 64px); align-items: start; }
+/* Grid/flex items default to min-width:auto and refuse to shrink below their
+   min-content. The long email address then forces the whole column wider than
+   the panel. Let the tracks shrink. */
+.book__grid > * { min-width: 0; }
 .book h2 { font-size: var(--fs-3xl); color: #fff; }
 .book__lead { margin-top: 18px; color: #C7D3E3; font-size: var(--fs-lg); }
 .book__perks { margin-top: 26px; display: grid; gap: 14px; }
 .book__perks li { display: flex; gap: 12px; align-items: center; color: #DCE5F1; font-size: var(--fs-sm); }
 .book__perks svg { width: 20px; height: 20px; color: var(--sky-400); flex: none; }
-.book__contact { margin-top: 30px; display: grid; gap: 12px; }
-.book__contact a { display: inline-flex; align-items: center; gap: 12px; color: #fff; font-weight: 500; }
+.book__contact { margin-top: 30px; display: grid; gap: 12px; min-width: 0; }
+/* overflow-wrap:anywhere (not break-word) so the email also shrinks min-content */
+.book__contact a { display: inline-flex; align-items: center; gap: 12px; color: #fff; font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
 .book__contact .ico { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,0.1); color: var(--sky-400); flex: none; }
 .book__contact .ico svg { width: 18px; height: 18px; }
 
@@ -496,7 +501,7 @@ body.menu-open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rota
 .footer__links { display: grid; gap: 11px; }
 .footer__links a { font-size: var(--fs-sm); color: #A9B9CF; transition: color var(--dur); }
 .footer__links a:hover { color: #fff; }
-.footer__contact li { display: flex; gap: 11px; align-items: flex-start; font-size: var(--fs-sm); margin-bottom: 12px; color: #A9B9CF; }
+.footer__contact li { display: flex; gap: 11px; align-items: flex-start; font-size: var(--fs-sm); margin-bottom: 12px; color: #A9B9CF; min-width: 0; overflow-wrap: anywhere; }
 .footer__contact svg { width: 17px; height: 17px; color: var(--sky-400); flex: none; margin-top: 2px; }
 .footer__social { display: flex; gap: 10px; margin-top: 20px; }
 .footer__social a { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,0.06); color: #C7D3E3; transition: background var(--dur), color var(--dur), transform var(--dur) var(--ease-out); }
@@ -516,7 +521,7 @@ body.menu-open .nav__toggle span:nth-child(3) { transform: translateY(-7px) rota
 }
 .page-hero h1 { font-size: var(--fs-3xl); color: #fff; max-width: 18ch; }
 .page-hero p { margin-top: 18px; color: #C7D3E3; font-size: var(--fs-lg); max-width: 56ch; }
-.crumbs { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); color: #9FB2CC; margin-bottom: 18px; }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: var(--fs-sm); color: #9FB2CC; margin-bottom: 18px; }
 .crumbs a:hover { color: #fff; }
 .crumbs svg { width: 14px; height: 14px; opacity: 0.6; }
 
@@ -706,6 +711,23 @@ body.is-leaving { opacity: 0; transition: opacity 220ms var(--ease); }
   .footer__bar { flex-direction: column; text-align: center; }
   .hero__chip { display: none; }
 }
+
+/* =====================================================================
+   Narrow-mobile safety (<=480px). Trims container/panel padding so the
+   quote panel and form card have room; no visual/design changes.
+   ===================================================================== */
+@media (max-width: 480px) {
+  .container { padding-inline: 16px; }
+  .book { padding: 24px 18px; }
+  .form { padding: 20px 16px; }
+  .book__contact .ico { width: 34px; height: 34px; }
+}
+
+/* Form controls can never exceed their container, at any width. */
+.field input, .field select, .field textarea { max-width: 100%; }
+
+/* Long unbreakable tokens (email addresses) must never widen their container. */
+a[href^="mailto:"] { overflow-wrap: anywhere; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
